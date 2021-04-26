@@ -1,0 +1,4 @@
+create react app using - npx create-react-app appname
+start react app - npm start
+package.json - holds all the dependencies.
+if you find any npm issues like ERR:npm missing, run - npm install
