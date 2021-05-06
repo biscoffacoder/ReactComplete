@@ -56,7 +56,49 @@ Component - Part of UI.
                                     In Class Conponent - 
                                     Inside render method - Destructuring - const {name,heroName}=this.props;
             
-            Event Handling -
+            Event Handling - event handling can be done using onClick, onSubmit etc. they need to be in camelcase, and is handled by - onClick={clickHandler}.
+                                If you pass a function call instead of a function, it'll auto run without any effect and may cause infinite re-render.
+                                thus always pass a arrow function/ or a function and not a function call. 
+                                onClick(()=>{return clickHandler()}). While using arrow syntax we need to provide the function call. as Arrow function will then subsequently call the inner return method.
+                                In Class componenet - onClick={this.clickHandler}
+
+            Bind Event Handler - In JS, the this keyword becomes undefined when used inside another function call. for ex - onClick={this.clickHandler}, const clickHandler=()=>{console.log(this)// undefined}.
+                                 because of this event binding is necessary as the this keyword does not work as expected.
+                                 Binding can be done by 2 methods - 
+                                 1. Bind this keyowrd in the render method              - onClick = {this.clickHandler.bind(this)}. It'll now refer to the eventBind. Every update to the state will cause the component to re-render and generate clickHandler again and again. Not performance optimized.
+                                 2. Bind using the arrow function in the render method  - onClick = {()=> this.clickHandler()}. This will call the method and return the value. This is also performance down
+                                 3. Bind in the constructor                             - In the class component, bind the this keyword to the method directly.
+                                                                                          constructor(){this.state={}, this.clickHandler=this.clickHandler.bind(this)}. In the render method we can now call - onClick={this.clickHandler}.
+                                                                                          This is the best practice and should be used. because the binding happens only once in the constructor.
+                                 4. Define the method using arrow syntax                - In JS, using the arrow function automatically allows this keyword to work as expected. 
+                                                                                          clickHandler=()=>{this.setState({})}. No need to define binding in constructor.
+
+            Method as Props -  Child Component calling a method in Parent Component. This can be achieved by passing the method as props to the child component from parent component.
+                               Parent Comp -  greetParent(){alert("Hello")} render(){return(<ChildComp greet={this.greetParent})} 
+                               Child Comp  - render(){return (<div><button onClick={props.greet}/></div>)}
+                               We can also pass parameters from child component using arrow function syntax- <div><button onClick={()=>props.greet("someValue")}/></div> 
+
+      Conditional Rendering -  Rendering data on some conditions, we can use - 1. if/else 2. element variables 3. Ternary conditional operator 4. Short circuit operator
+                               1. if/else -  if/else do not work inside the JSX, that's why we need if/else outside the JSX. In Class component - this.setState={isLoggedIn:false}
+                                             render(){return (if(this.state.isLoggedIn){return <div>Hi</div>}else{return <div>NO</div>})}
+
+                               2. variables - Inside/outside the render method, define a variable and set the JSX on if/else, and display the variable in JSX, instead of the duplication of code.
+                                              let mess = ""; if(this.isLoggedIn){mess = <div>HI</div>}else{mess= <div>NO</div>}
+                                              render(){return <div>{mess}</div>}
+
+                                3. Ternary -  It can be used inside the JSX. 
+                                              render(){return(this.state.isLoggedIn ? <div>TRUE</div> : <div>FALSE</div>)}
+
+                                4. Short Circuit -  If we want to display only true conditions. we can use short circuit operator. 
+                                                    render(){return (this.state.isLoggedIn && <div>HI</div>)}.
+                                                    This will check the LHS first and then render RHS. If LHS is false, it'll not render anything.             
+
+
+
+
+
+        
+
 
 
 
