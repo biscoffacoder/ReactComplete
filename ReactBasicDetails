@@ -1,4 +1,65 @@
+React - Open source library for building UI, not a framework.
+        React is declarative, React.DOM is supposed to build on what you define.
+        npx - npm package runner that gets installed when installing npm. Command to create React app - npx create-react-app fooname
+        npm - when using npm alone, we need to install npm globally, command - npm install create-react-app -g, create-react-app fooname;
+
+
+
 create react app using - npx create-react-app appname
 start react app - npm start
 package.json - holds all the dependencies.
 if you find any npm issues like ERR:npm missing, run - npm install
+
+index.js    - is the first page to be executed, imports ReactDOM from react-dom. App from ./App
+index.html  - the single page that gets loaded from index.js reference which refers to the div id="root".
+App.js      - an export functional componenet that contains the information to be rendered in index.js which in turn is being rendered in root id of index.html.
+
+JSX         -   JavaScript XML - HTML code in JS, react transforms this into browser acceptable HTML. Extension to JS language syntax.
+                React uses the decalrative approach where we define the desired target state and let React figure out the actual JS DOM instructions.
+                JavaScript uses imperative approach where we clearly define all instructions that needs to be executed to generate an element.
+                JSX differences - 
+                1. Class -> className
+                2. for -> htmlFor
+                3. camelCasing - onclick->onClick, tabindex -> tabIndex
+
+Component - Part of UI.
+            2 types of Componenets - Functional componenet, Class component - 
+            Functional componenet - JS functions, do not need to extend React.Component. Can return JSX/HTML
+            Class Component - Class extending Conponent Class, render method returning HTML/JSX.
+            We can create Functional component, Arrow functional componenet. Both of them work as expected.
+            JSX code should always have only 1 root element. Workarounds can be - HOC, additional div. It uses className instead of class.
+            Props - properties that can be passed out from higher componenet to children component.
+            1. Functional Component -   JS function, optionally receive props, and return HTML/JSX. 
+                                        Abscence of "this" keyword, uses different styles to lifecycle hooks, mainly for UI, dumb/presentational.
+                                        Props are handled using props.foo Cannot change props- write to props in Components
+            
+            2. Class Conponent -        ES6 classes, optionally receive props and return HTML/JSX. It can use private state and maintain it.
+                                        More feature rich, maintain their own private state, complex UI logic, provides lifecycle hooks, Smart/Containter.
+                                        Props are handled using this.props.foo  
+
+            Props vs State - 
+            Props - props get passed to the component, function parameters, immutable, Functional components - props.foo, Class Component - this.props
+            State - managed within the component, variables decalred in the function body, state can be changed, useState hook in Functional Component, this.state in Class Component.
+
+            State in class component - Create constructor to use state - constructor(){super(); this.state={name:"Allan"}}, using the value - {this.state.name}
+            Modifying the state directly without using setState does not rerender the Component, the state may change, but it'll not re-render the component. 
+            setState -  To update the state in class component, we can use setState, Calls to setState are asynch. Passing a callback function makes sure that the setState is updated immediately.
+                        React may group multiple setState calls into one, to adderess performance issues. This will not guarentee the updation of state using multiple setStates, in 1 cycle. ex - func(){setState//5 times}-- result / setState 5 times but state updation only once.
+                        Use the function as an argument to update the state based on previous values. 2nd parameter to the setState can be props.
+
+            Destructuring props -   Usual passing of props - (props) - Use - {props.name}.
+                                    
+                                    In Functional Components-
+                                    Destructuring - (name) - use - {name}
+                                    (props) - Destructuring - const {name,heroName}=props;
+
+                                    In Class Conponent - 
+                                    Inside render method - Destructuring - const {name,heroName}=this.props;
+            
+            Event Handling -
+
+
+
+
+
+
