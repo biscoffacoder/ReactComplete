@@ -93,13 +93,117 @@ Component - Part of UI.
                                                     render(){return (this.state.isLoggedIn && <div>HI</div>)}.
                                                     This will check the LHS first and then render RHS. If LHS is false, it'll not render anything.             
 
+        List rendering -        Map can be used to transform each value and return a new array. JSX can be returned using map to generate a dynamic list.
+                                const val = ["a","b","c"]. render(){return(<div>{val.map((x)=>{return <h2>{x}</h2>})}</div>)}
+                                When rendering a list we need to assign unique key property. This helps react to know which to be rendered again and not the entire list creation again.
+                                Key is not accessible in the child component as a prop. It is a reserved keyword. val.map((x)=>{return <h2 key={id}>{x}</h2>})
+                                React generates a mutation when new values are added or removed, which means it does not create a new list but checks each key of the item of the list with the changed list and when a key is not found or has been removed, React appends/removes from the relevant index of list. Key prop is necessary here to identify which value has been changed.
+        Index as key -          the map arrow function accepts 2 parameter (value, index).  - val.map((value,index)=>{return <h2>{x}</h2>}).
+                                Although this can be used, it should be avoided as it can cause various issues, it should only used when list is static, will not be reordered/filtered.
+
+        Style React Component - 1. CSS stylesheets 2. Inline styling 3. CSS Modules 4. CSS in JS library
+
+                                1. CSS stylesheets - create a sheet - mystyles.css, class should be given as - .class{} and used in Component as className="". File should be imported into as import './mystyles.css'
+                                                     multiple classes can be used for styling by - `${oneclass} anotherclass`.
+
+                                2. Inline styling  -  define a object with key as the camelcase style property and value as the style value. It can be used in the JSX by - style={object}- 
+                                                      const heading ={color:"blue",fontSize:"72px"}. render(){return(<h2 style={heading}>HI</h2>)}                                                   
+                                
+                                3. Modules Styling - Module can be defined as file - appStyles.module.css and class inside this can be = .success{color:red}, It can be imported into the component by - import styles from 'appStyles.module.css'
+                                                     and can be applied inline using - <h2 className={styles.success}/>
+                                                     Classes are locally scoped in modules    
+
+        Form Handling -         Controlled Component - When a value is read from a state and on updation the state gets updated and the component re-renders, it's called a Controlled Component
+                                                       Form can be controlled using onChange = {}, onSubmit={}, onClick = {}.
+                                                       Whenever we try to access or pass the values, it needs to go through event, it is passed as a parameter to the event handler.
+                                                       <input type="text" value = {this.state.userName} onChange = {this.handleUserName}>
+                                                       handleUserName =(event) =>{console.log(event.target.value)} 
 
 
+ lifecycle methods - They are present only in class component. They can be divided into 4 reasons - 
+                     1. Mounting - When an instance of a component is being created and inserted into the DOM. All Methods - constructor, static getDervivedStateFromProps, render, componentDidMount 
+                     2. Updating - When a component is being re-rendered as a result of either update in props or state. All Methods - static getDervivedStateFromProps, shouldComponentUpdate, render, getSnapshotBeforeUpdate, componentDidUpdate
+                     3. Unmounting - When a component is being removed from the DOM. All Methods - componentWillUnmount
+                     4. Error Handling - When there is an error during rendering in a lifecycle method, or in the constructor of any child component. All Methods - static getDerivedStateFromError, componentDidCatch
 
+                                1. Mounting - In Order of execution - 
+                                                1.1 constructor(props) - First call is made to the constructor, a special function that will get called whenever a new component is created.
+                                                                         Good for - Initializing state, binding event handlers
+                                                                         Bad for  - Do not cause side effects like HTTP requests.
+                                                                         Need to call super(props). Only place where we can directly overwrite this.state
+                                                1.2 static getDervivedStateFromProps - When the state of the component depends on changes in props over time. Since its a static method, it does not have access to this keyword. Return an object that has the current state.
+                                                                                Good for - Set state
+                                                                                Bad for - Dont cause side effects like HTTP requests
+                                                1.3 render()            - Only required method in the Class component, it is a pure function, it should always render the same UI for a set of state and props.
+                                                                          Good for - Read props and state and return JSX
+                                                                          Bad for - Do not change state or interact with DOM or make HTTP requests.
+                                                                          children component lifecycle methods are also executed in this call. 
+                                                1.4 componentDidMount() - Runs only once and is invoked immediately after a component and all its children component have been rendered to the DOM.
+                                                                          Good for - Cause side effects like HTTP requests, interact with the DOM.                                                                                  
 
-        
+                                2. Updating - In Order of execution - 
+                                                2.1 static getDervivedStateFromProps - Method is called everytime a componentis re-rendered.When the state of the component depends on changes in props over time. Since its a static method, it does not have access to this keyword. Return an object that has the current state.
+                                                                                       Good for - Set state
+                                                                                       Bad for - Dont cause side effects like HTTP requests
+                                                2.2 shouldComponentUpdate(nextProps, nextState) - Method can be used to decide if the component should update or not, decision will cause re-render.
+                                                                                                  Good for - performance optimization
+                                                                                                  Bad for - Dont cause sideeffects
+                                                2.3 render()            - same as above
+                                                2.4 getSnapshotBeforeUpdate(prevProps, prevState) - Called right before the changes from the virtual DOM are to be reflected in the DOM.
+                                                                                                    Capture some information from the DOM.
+                                                2.5 componentDidUpdate(prevProps, prevState, snapshot) - called after render is finished in the re-render cycle
+                                                                                                         Good for - Cause side effects
 
+                                3. Unmounting - In Order of execution - 
+                                                3.1 componentWillUnmount - Method is invoked immediately before a component is unmounted and destroyed.
+                                                                           Good for - Cancelling any network requests, remove event handler, cancel subscriptions invalidate timers
+                                                                           Bad for - Dont set state.  
 
+                                4. Error handling -
+                                                4.1 static getDerivedStateFromError(error)
+
+                                                4.2 componentDidCatch(error, info) -                                                                                        
+
+React Fragments - Lets you groom child component without adding extra nodes to the DOM. If we want adjacent elements to be rendered, they should always be under one parent element like div. Since adding divs around all children components will add multiple nodes in DOM, to avoid this we will use Fragments.
+                  To use this, we can directly use <React.Fragment> <h2></h2><p></p></React.Fragment> instead of traditional <div> and this will not generate additional nodes in DOM.
+                  the shorthand syntax is used as - <><h2></h2></> But while using this we can not pass key values. 
+
+Pure Component - Pure Component makes the class component to extend PureCompoenent instead of Component. If a component is created using the PureComponent, it'll only re-render if there's a change in props and state. It achieves this by shallow comparision of both.
+                 Ex - class Some extends PureCompoenent.
+                 differences - Regular Component - It does not implement the shouldComponentUpdate method, returns true by default.
+                               Pure Compoenent   - It implements the shouldComponentUpdate with a shallow props and state comparision. SC of prevProps with currentProps and prevState with currentProps - if false, it'll re-render.
+                 Shallow comparision - Primitive types - "a shallow comparision b" returns true if a and b have the same value and are of the same type. Ex - String 'Allan' SC String 'Allan' == true.
+                                       Complex types   - "a shallow comparision b" returns true if a and b ref the same object. Ex - var a = [1,2,3], var b = [1,2,3] var c = b; a===b // false, b===c //true.
+                 It is a good idea to keep all children component as Pure if Parent is pure.
+                 Never mutate the state, always return a new object that reflects the new state.
+
+React.memo     - What PureCompoenent is to class based component, React.memo is to function based component. It is a higher order component.
+                 Ex -
+                 const fooName = (props)=>{
+                 export default React.memo(fooName);
+                 }
+
+Refs           - Refs are used to reference the DOM elements and interact with them directly. Refs can be created in 3 steps - 
+                 If using a class component, create a ref instance in the constructor for global use. React.createRef(); to create a ref.
+                 1. constructor(props){ super(props); this.inputRef = React.createRef();} 
+                 Attach this ref to the required DOM element in the render method. It can be attached  using the keyword - ref. Once the ref is created, it'll hold a reference object which will have a property = "current":"input"
+                 2. render(){return{<div><input type="text ref={this.inputRef}/></div>}}
+                 Call the focus method on this ref to focus the DOM input element.
+                 3. componentDidMount(){ this.inputRef.current.focus()}
+
+                 We can also create ref using the callBackRef approach - 
+                 create a property and assign it to null in the constructor.
+                 1. constructor(props){ super(props); this.cbRef = null;}
+                 create a method, which accepts the ref element and assigns it to the property.
+                 2. constructor(props){ super(props); this.cbRef = null; this.fooMethod = element =>{this.cbRef = element}}
+                 Attach the ref method to the DOM element.
+                 3. render(){return{<div><input type="text ref={this.fooMethod}/></div>}}
+                 Check if the ref is not null, and then call the focus method. No need to call current here, as it directly accesses the element.
+                 4. componentDidMount(){if(this.cbRef){this.cbRef.focus();}}
+
+Refs with Class comp - If we want the parent component to call the focus method inside the child component, we need to create ref in child, create a method that sets the ref in child, assign the ref to a DOM element.
+                       Next we need to create a ref in Parent, assign this ref to the child component, create a method to call the focus method of the child component using - this.fooRef.current.fooChildFocus(); the ref in the parent comp will have current access to the child component which will allow it to use the focus method. 
+                       Refs cannot be attached to functional component.
 
 
 
