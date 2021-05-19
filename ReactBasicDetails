@@ -205,6 +205,206 @@ Refs with Class comp - If we want the parent component to call the focus method 
                        Next we need to create a ref in Parent, assign this ref to the child component, create a method to call the focus method of the child component using - this.fooRef.current.fooChildFocus(); the ref in the parent comp will have current access to the child component which will allow it to use the focus method. 
                        Refs cannot be attached to functional component.
 
+Portals - Helps to render elements in such a way that they are not part of the root element.
+          It can be created using ReactDOM.createPortal while rendering.
+
+Error Boundary - From the error handling phase methods - static getDerivedStateFromError and componentDidCatch(error,info). We need to use error Boundary so that when there is a error in the app, it does not break. As React will unmounts the whole component Tree. 
+                 So error boundary is - a class component that implements either one of both of the lifecycle methods. 
+                 The static getDerivedStateFromError is used as a fallback UI after an error is thrown and the componentDidCatch is used to log the error info.
+                 error can be thrown from component using - throw new Error("some msg");
+                 1. Create a class component ErrorBoundary. 
+                 class ErrorBoundary extends Compoenent {
+                         constructor(props){
+                                 super(props);
+                                 this.state={hasError:false}
+                         } 
+                         static getDerivedStateFromError(error)
+                         {
+                                 return {
+                                         hasError:true;
+                                 }
+                         }
+                         componentDidCatch(error,info)
+                         {
+                                 console.log(error);
+                         }
+                         render(){
+                                 if(this.state.hasError)
+                                 {
+                                      return <h1>Something went wrong </h1>   
+                                 }
+                                 return this.props.children;
+                         }
+                         }
+                 2. Wrap all component with the error boundary in the app.js. This will work only in the production. Not in DEV as it will show all errors to rectify.        
+                 <ErrorBoundary>
+                 <ChildComp>
+                 </ErrorBoundary>
+                 Much better would be to wrap each component with ErrorBoundary.
+                 ErrorBoundary can catch errors in rendering, lifecycle methods and constructors in the trees below them. They do not catch errors in the action elements like onClick.
+
+higher Order Component - its required to share common functionality between component.
+                         A pattern where a function takes a component as an argument and returns a new component.
+                         Pass in the original component to function that returns the enhanced component back. 
+                         To create an HOC - 
+                         1. const updatedComp = (OriginalComponent)=>
+                         {
+                                 class NewComponent extends React.Component {
+                                         const clickCounter=()=>
+                                         {
+                                                 return 1;
+                                         }
+                                         render(){return <OriginalComponent name="Allan" click={clickCounter}/>}
+                                 }
+                         return NewComponent
+                         }
+                         export default updatedComp
+
+                         2. const ChildComp =(props)=>{
+                                 render(){
+                                         <div>{props.name} {props.click}</div>
+
+                                 }
+                                 export default updatedComp(ChildComp); 
+                         }
+
+Render Props - 
+
+
+React Context - Consider a DOM tree as such - AppComponent -> A, B->C, D->E->F. In this if we want to pass props to A D and F, we need to pass it to its parents as well. If deeply nested, we're providing props to unnecessary components as well.
+                Context provides a way to pass data through the component tree without having to pass props down manualy at every level.
+                Three steps to use Context -  
+                1. Create the Context - 
+                        Create a Context Component which will be used to export Consumer and Provider contexts.
+
+                        import React from 'react'
+                        const UserContext = React.createContext();
+                        const UserProvider = UserContext.Provider
+                        const UserConsumer = UserContext.Consumer
+
+                        export {UserProvider,UserConsumer};
+
+                2. Provide a Context Value - 
+                        Provide the Context where all children of the components can use it. Therefore App.js is a good place.
+                        In App.js wrap the component with the context and pass the props
+                        <UserProvider value = "Allan">
+                        <Component C/>
+                        </UserProvider>
+
+
+                3. Consume the context value - Since we need to consume in ComponentF, we can use Consumer and provide a function which takes in the props as the parameter and can be returned into a JSX.
+                        Thus in ComponentF - 
+
+                        return(){
+                                render(
+                                        <UserConsumer>
+                                        {
+                                                (userName)=>{
+                                                        return <div> Hello {userName} </div>
+                                                }
+                                        }
+                                        </UserConsumer>
+                                )
+
+                        }        
+
+               1. We can set a default value while setting up the context. const UserContext = React.createContext("default value"); Now if we dont use UserProvider in  App.js and still use UserConsumer in ComponentF we will get Hello default Value instead of Hello Allan.
+               2. Context type - Need to export UserContext itself, assign this to the contextType method of the class to use in. Now it can be used as this.context. We can also use static contextType = UserContext.
+                                 
+                                 In UserContext class - 
+                                 export default UserContext;
+                                 In ComponentE - 
+                                 render(){
+                                         return(
+                                                 <div>
+                                                 ComponentE context {this.context}
+                                                 <ComponentF/>
+
+                                         )
+
+                                 }  
+                                 ComponentE.contextType = UserContext;
+
+React and HTTP - API calls can be made using external HTTP library like axios, fetch library.
+                 Add axios by - npm install axios 
+                 To use axios calls - 
+                 1. create a state property - 
+                        constructor(props)
+                        {
+                                super(props);
+                                this.state={posts:[]}
+
+                        }
+                2. Make the HTTP call in the componentDidMount lifecycle hook.
+                        componentDidMount{
+                             axios.get("https://jsonplaceholder.typicode.com/posts")
+                             .then(response=>{
+                                     console.log(response);
+                                     this.setState ({posts:response.data})
+                             })
+                             .catch(error=>{
+                                   console.log(error);  
+                             })   
+                        }        
+                3. Use the state with fetched API values in rendering the JSX.
+                        render(){
+                                return(
+                                        <div>
+                                        {posts.map((value)=>{return <div key = {post.id}>
+                                        {value}
+                                        </div>}
+                                        )}
+                                        </div>
+                                )
+                        }
+
+                1. For Post requests - Create the state object as required with properties.
+                        constructor(props)
+                        {
+                                super(props);
+                                this.state={
+                                        userId='',
+                                        userName='',
+                                        body=''
+                                }
+                        }
+                2. Create a form and associate the change handlers - 
+                        changeHandler = (event)=>{
+                                this.setState({[event.target.name]:event.target.value})
+                        } 
+
+                        submitHandler = event=>{
+                                event.preventDefault();
+                                console.log(this.state);
+                                axios.post("https://jsonplaceholder.typicode.com/posts",this.state)
+                                .then(response=>{
+                                        console.log(response)
+                                })
+                                .error(errorCode=>{
+                                        console.log(errorCode)
+                                })
+                        }
+
+                        render(){
+                                return(
+                                        <div>
+                                        <form onSubmit = {this.submitHandler}>
+                                        <div>
+                                        <input type='text' name='userId' value={userId} onChange = {this.changeHandler}/>
+                                        </div>
+                                        <div>
+                                        <input type='text' name='userId' value={userId} onChange = {this.changeHandler}/>
+                                        </div>
+                                        <div>
+                                        <input type='text' name='userId' value={userId} onChange = {this.changeHandler}/>
+                                        </div>
+                                        </form>
+                                        </div>
+
+                                )
+                        }
+                3. Post the request - Make the post request in the submit handler.
+
 
 
 
