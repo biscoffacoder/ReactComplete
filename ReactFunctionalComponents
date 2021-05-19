@@ -1,0 +1,24 @@
+React Hooks - Hooks are a new feature addition to React version 16.8 which allows to use the React features without having to write a class.
+              They don't work inside classes. Why Hooks ? - 
+              1. this keyword  - Complication of this keyword has been removed from Hooks
+              2. Binding event handlers in class components
+              3. classes don't minify very well and make hot reloading unreliable.
+              4. No Particular way to reuse stateful component logic. HOC and render props do address this problem but makes the code harder to follow.
+              5. Creating component for complex scenarios such as data fetching and subscribing to events are spread across and not organised in one place.
+                 Ex - Data fetching in componentDidMount and componentDidUpdate
+                 Ex - Event Listeners in  componentDidMount and componentWillUnmount
+              important points- React 16.8, completely opt in, backwards compatible, can't use Hooks inside Class component, they provide a more direct API to the React concepts we already know.
+              
+              Summary - hooks allows you to use React features without having to write class, avoids the confusion of this keyword, allows to reuse stateful logic, organize logic inside a component into reusable isolated units.
+              Rules of Hooks - 
+              1. Only calls Hooks at the Top level. Dont call Hooks inside loops, conditions or nested functions.
+              2. Only Call Hooks from React Functions - Call them within react functional component and not just any regular JS function.
+
+
+1. useState - useState is a hook that can be seen as a replacement for state in class component. It takes an intital value and returns a pair of values (currentValue, methodforupdation).
+              const [count,setCount] = useState(0);
+              the first time componentloads, the value in count is set to 0; each time the setCount is called, it updates the value.
+              When using setState - make sure to check if the previous values needs to be changed on the basis of the previous values.
+              If yes, use an arrow function that takes in the previous value and changes the state.
+              Ex - const [count,setCount] = useState(0); setState(prevValue=>prevCount+1)
+              
