@@ -21,4 +21,422 @@ React Hooks - Hooks are a new feature addition to React version 16.8 which allow
               When using setState - make sure to check if the previous values needs to be changed on the basis of the previous values.
               If yes, use an arrow function that takes in the previous value and changes the state.
               Ex - const [count,setCount] = useState(0); setState(prevValue=>prevCount+1)
-              
+              UseState with objects - 
+              ex - const [name,setName] = useState({firstName:'',lastName:''});
+              const handler=(event)=>{
+                  setName(...name, {firstName:event.target.value})
+              }
+              spread is necessary as you need to take the previous name value for firstname/lastname and preserve it and make change to the one that is being changed.
+              UseState does not manually merge and update objects, thus we must manually handle it by spread.
+              UseState with array - 
+              ex - const [items,setItems] = setState([]);
+              const addItem=(value)=>
+              {
+                  setItems([...items,value]);
+              }
+			  
+2. useEffect - useEffect hook lets you perform side effects in functional components. It is a close replacement
+			   for componentDidMount, componentDidUpdate and componentWillUnmount.
+			   useEffect(()=>{},[]). It takes a function and dependencies that are neeeded to run the component again. For single run, leave the dependencies array as empty.
+			   Returning a value from the function will pull into effect of the componentWillUnmount clean up code.
+			   This function executes after every render of the function.
+			   Ex - 
+			   			   
+			   1. Run on every re-render - Mimic componentDidUpdate with useEffect by providing dependency array
+			   const [counter,setCounter] = useState(0);
+			   useEffect(()=>{
+			   console.log("Side effect being rendered");
+			   },[count])
+			   return(<div><button onClick={()=>setCount(count+1)}>Button</button></div>)
+			   
+			   2. Run only once - Mimic componentDidMount with useEffect by providing a empty dependencies array
+			   
+			   const [counter,setCounter] = useState(0);
+			   useEffect(()=>{
+			   console.log("Side effect being rendered");
+			   },[])
+			   return(<div><button onClick={()=>setCount(count+1)}>Button</button></div>)
+			   
+			   3. Clean up - Mimic componentWillUnmount with useEffect by returning a function.
+			   
+			   const [display,setDisplay] = useState(true);
+			   const [x, setX] = useState(0);
+			   const [y, sety] = useState(0);
+			   
+			   const logMouse = e =>{
+			   console.log("MouseEvent");
+			   setX(e.clientX);
+			   setY(e.clientY);
+			   }
+			   useEffect(()=>{
+			   console.log("useEffect called");
+			   windown.addEventListener('mousemove',logMouse);
+			   
+			   return ()=>{
+			   console.log("Cleanup function")
+			   window.removeEventListener('mousemnove',logMouse);
+			   }
+			   },[])
+			   
+			   return(<div<button onClick={()=>setDisplay(false)}>Button</button></div>)
+			   
+			   The dependencies array is used to let react know what to watch for changes to render again.
+			   Whenever we need to call a function using the useEffect, we should create function inside the useEffect and add any dependencies.
+			   We can have multiple useEffects in a component.
+			   
+			   4. Fetch data using API endpoints.
+			   
+			   const [arr,setArr] = useState([]);
+			   
+			   useEffect(()=>{
+			   axios.get("URL").then(resp=>{
+			   console.log(resp)
+			   setArr(resp.data)
+			   })
+			   .catch(err=>{
+			   console.log(err)})
+			   },[])
+			   
+			   5. Fetching individual value from GET depending on ID.
+			   const [arr,setArr] = useState([]);
+			   const [id,setId] = useState(0);
+			   const [butId, setButId] = useState(0);
+			   
+			   useEffect(()=>{
+			   axios.get(`URL/`${id}).then(resp=>{
+			   console.log(resp)
+			   setArr(resp.data)
+			   })
+			   .catch(err=>{
+			   console.log(err)})
+			   },[butId])
+			   
+			   const handleClick =()=>{
+			   setButId(id)}
+			   
+			   return(
+			   <div>
+			   <input type="text" value={id} onChange={event=>{setId(event.target.value)}}
+			   <button onClick={handleClick}></button>
+			   </div>)
+
+3. useContext - In a nested component tree - AppComponent - A, B, C. B->D. C->E->F, and some state/props needs to be passed to nested component we would need to traverse through each comp. This creates unnecessary prop for component which do not need.
+				To directly send props to required component we can use context.
+				Context provides a way to pass data through the compoenent tree without having to pass props down manually at every level.
+				Context without hooks uses Provider and Consumer services. 
+				Steps that were used - 1. Create the context. 2. Provide the Context and wrap the child component that needs the props. 3. The child component must be able to consume the context.
+				To move away from the verbose coding in the ContextAPI, useContext hook was introduced. 
+				
+				Component App.js
+				
+				export const UserContext = React.createContext();
+				export const ChannelContext = React.createContext();
+				
+				function App(){
+				return(
+				<div className="App">
+				 <UserContext.Provider value = {'Allan'}>
+				  <ChannelContext.Provider value = {'channel'}
+				   <ComponentF>
+				  </ChannelContext.Provider>
+				 </UserContext.Provider>
+				</div>	
+				
+				)
+				}
+ 
+				ComponentF.js
+				
+				const user = useContext(UserContext)
+				const channel = useContext(ChannelContext);
+				
+				return(
+				<div>
+					{user} and {channel}
+				</div>
+				)
+				
+4. useReducer - Its used for state management, an alternative for useState. useState is built using useReducer.
+				All the hooks have some meaning behind them - useState deals with state, useEffect deals with side effects, useContext deals with contextAPI, useReducer deals with reducers.
+				Reducer - From vanilla JS, the reduce method executes a reducer function that we provide on each element of the array resulting in a single output value.
+				Ex - const arr = [1,2,3,4]; 
+					 const reducer = (accumulator,currentValue)=>{accumulator+currentValue};
+					 console.log(arr.reduce(reducer));//10
+					 console.log(arr.reduce(reducer,5));//15
+				
+				reduce in JS - 
+					1. array.reduce(reducer,initialValue)
+					2. singleValue = reducer(accumulator,itemValue);
+					3. reduce method returns a single value.
+				useReducer in React -
+					1. useReducer(reducer, initialState);
+					2. newState = reducer(currentState,action)
+					3. useReducer returns a pair of values -  [newState,dispatch]
+				To use useReducer, we need to have a reducer function that modifies the state depending on the action that is provided by the dispatch method called.
+				Thus, the reducer method returns a single modified state value.
+				Ex - 
+				Counter.js 
+				
+				const initialState = 0;
+				const reducer =(state,action)=>
+				{
+				 switch(action)
+				 {
+					case 'increment':
+						return state +1;
+						break;
+				    case 'decrement':
+						return state-1;
+						break;
+					case 'reset':
+						return initialState;
+						break;
+					default:
+						return state;
+				 }
+				}
+				
+				function Counter(){
+				
+				cosnt [count, dispatch]= useReducer(reducer, initialState);
+				
+				return(){
+				<div>
+				{count}
+				<button onClick = {()=>dispatch('increment')}>Increment</button>
+				<button onClick = {()=>dispatch('decrement')}>Decrement</button>
+				<button onClick = {()=>dispatch('reset')}>Reset</button>
+				</div>}
+				}
+
+				Ex 2 - CounterTwo.js
+				If the state and the action are objects. we can use them in the below format.	
+				By Keeping state as an object, we can track of multiple variables, by keeping action as an object we can execute multiple actions through values.	
+				
+				const initialState = {
+				counterVal:0}
+				const reducer =(state,action)=>
+				{
+				 switch(action.type)
+				 {
+					case 'increment':
+						return {...state,counterVal: state.counterVal+action.value}
+						break;
+				    case 'decrement':
+						return {...state,counterVal: state.counterVal-action.value}
+						break;
+					case 'reset':
+						return initalState;
+						break;
+					default:
+						return state
+				 }
+				}
+				
+				function Counter(){
+				
+				cosnt [count, dispatch]= useReducer(reducer, initialState);
+				
+				return(){
+				<div>
+				{count}
+				<button onClick = {()=>dispatch({type:'increment',value:5})}>Increment</button>
+				<button onClick = {()=>dispatch({type:'decrement',value:5})}>Decrement</button>
+				<button onClick = {()=>dispatch({type:'reset'})}>Reset</button>
+				</div>}
+				}
+				
+				We can use multiple useReducers with the same reducer and initial states if their functionalities are same. We will be able to manage individual states
+				
+				To incorporate global state management, that is to share state between components, we can use useReducer + useContext.
+				For ex - if we have useContext component tree structure and we need to implement a global counter whose values can be changed from the component A,D,F which are deeply nested. We handle the global state in App.js and pass functions to these compoenents from ContextHooks.
+				
+				1. App.js
+				
+				export const CountContext = React.createContext();
+				
+				const initialState = 0;
+				const reducer =(state,action)=>
+				{
+				 switch(action)
+				 {
+					case 'increment':
+						return state +1;
+						break;
+				    case 'decrement':
+						return state-1;
+						break;
+					case 'reset':
+						return initialState;
+						break;
+					default:
+						return state;
+				 }
+				}
+				
+				function App(){
+				const [count,dispatch] = useReducer(reducer,initalState);
+				
+				return (
+				<CountContext.Provider 
+				value = {{countState: count, countDispatch: dispatch}}>
+				<div>
+				{count}
+				<ComponentA>
+				<ComponentB>
+				<ComponentC>
+				</div>
+				</CountContext.Provider>
+				)
+				}	
+				
+				2. ComponentA
+				
+				function ComponentA(){
+				const counterContext = useContext(CountContext);
+				
+				return(
+				<button onClick = {()=>counterContext.countDispatch('increment')}>Increment</button>
+				<button onClick = {()=>counterContext.countDispatch('decrement')}>Decrement</button>
+				<button onClick = {()=>counterContext.countDispatch('reset')}>Reset</button>
+				)
+				}
+				
+				Data fetching with useReducer - similar to useEffect example. To use with useReducer check below - 
+				While using useEffect we may be managing multiple states. We can reduce the code by using useReducer.
+				
+				Ex - 
+				
+				const initialState = {loading : true, error: '', post: {}};
+				const reducer = (state,action)=>{
+					switch(action.type){
+						case 'FETCH_SUCCESS':	
+							return {loading: false, error: '', post: action.payload}
+						case 'FETCH_ERROR':
+							return {loading: false, error: 'Something went wrong!', post:{}}
+					}
+				}
+				function DataFetching (){
+					const [dataPost, dispatch] = useReducer(reducer, intitalState);
+					
+					useEffect(()=>{
+					axios.get("URL").then((resp)=>{
+						dispatch({type:"FETCH_SUCCESS", payload:resp.data})
+					}).catch((error)=>{
+						dispatch({type:"FETCH_ERROR"})
+					})
+					},[])
+					return(
+						<div>
+							{dataPost.loading ? "Loading": dataPost.post}
+							{dataPost.error ? dataPost.error : null}
+						</div>
+					)
+				}
+				
+				useState vs useReducer
+					Scenarios					useState 					useReducer
+				1. Type of state		| Number, String, Boolean 	| Object or Array 
+				2. Number of state 
+					transitions			| One or two				| Too Many
+				3. Related state 
+					transitions ? 		| No 						| Yes
+				4. Business Logic 		| No Business logic 		| Complex Business logic
+				5. Local vs Global		| Local state management	| Global state management
+
+
+5. useCallback - Usually, if a parent component has 10 childs, and one of the child triggers a function(state/props) update in the parent, the parent component re-renders forcing the complete children to re-render as well. 
+				 This may lead to performance issues as we may want to restrict it.	We can use React.memo to stop the unnecessary re-render if the props or state of the component has not changed.
+				 Ex - in the export statement of the component, add - export default React.memo(ComponentA)
+				 Even though after using React.memo, if we're using reusing functions of a component, when a prop for A changes, the component re-renders, at the same time Component where it's being re-used, will re-render again because React.memo will not prevent
+				 re-render if the prop being passed down is a call to the function because of function inequality. It sees it as a new function call.
+				 To prevent this as well we use useCallback.
+				 1. What is useCallback - useCallback is a hook that will return a memoized version of the callback function that only changes if one of the dependencies has changed.
+				 2. Why useCallback - It is useful when passing callbacks to optimized child components that rely on reference equality to prevent unnecessary re-renders. When using this, React returns a cached version of the function as a prop until the dependency has some change. This prevents the re-render of the same component if it's being used elsewhere.
+				 3. How to use - useCallback takes 2 arguments: the function to be used for callback and the dependency array to watch for.
+				 
+				 Ex - 
+				 
+				 const [age,setAge] = useState(0);
+				 
+				 const incrementAge = useCallback(()=>{
+					setAge(age+1);
+				 },[age])
+				 
+6. 	useMemo   - If there are functions that take considerable amount of time to process logic, it may slow down the rate of execution, In such a case
+				when there are functions which take a lot of time, other render items will also take place if the component re-renders. This is because every time a component re-renders
+				the functions are executed. To prevent such a behaviour, we can use useMemo Hook. It will re compute the cached values only if one of the dependencies have changed. 
+				This helps to avoid complex functions if they are not required to be executed on a particular re-render.
+				useMemo takes in a function that needs to be executed and a dependencies array to look for to re-run the function.
+				
+				const [counter1, setCounter1] = useState();
+				const [counter2, setCounter2] = useState();
+				
+				const isEven = useMemo(()=>{return counter1%2===0},[counter1])
+				
+				difference between useCallback and useMemo - 
+				useCallback - caches the provided function instance itself
+				useMemo - invokes the provided function and caches its result.
+				
+7. useRef 	-  useRef can be used to interact with the DOM tree and manipulate items directly, 
+			   To use this, we need to create a ref and then attach it to the element, call DOM methods using the ref.
+			   React will set the current property to the DOM node.
+			   
+			   Ex - 
+			   
+			   const inputRefFoo = useRef(null);
+
+			   useEffect(()=>{
+			    inputRefFoo.current.focus();
+			   },[])
+			   
+			   return(
+			   <div>
+			    <input ref={inputRefFoo} type="text"/>
+			   </div>)
+			   
+			   useRef can hold a reference to a DOM node using the ref attribute, it can also be used to store any mutable value.
+			   The value will persist through the re-renders.
+			   
+			   const [timer,setTimer] = useEffect();
+			   const intervalRef = useRef();
+			   
+			   useEffect(()=>{
+			   intervalRef.current = setInterval(()=>{setTimer(prevTimer=>prevTimer+1)},1000)
+			   
+			   return()=>{
+			    clearInterval(intervalRef.current)
+			   }
+			    
+			   },[])
+			   
+			   return(
+			   <div>
+			    <Hook Timer - {timer}>
+				<button onClick = {()=>clearInterval(intervalRef.current)}
+			   </div>)
+			   
+			   
+8. CustomHooks - A custom hook is basically a JS function whose name starts with "use". It can also call other hooks if required.
+				We can use this to share logic as an alternative to HOC's and render props.
+				File naming conventions - Folder name = hooks - files must start with - use - ex - useDocumentTitle.js
+				
+				Ex - 
+				useDocumentTitle.js
+				function useDocumentTitle(count){
+					useEffect(()=>{
+					document.title = `Count ${count}`},
+					[count])
+				}
+				export default useDocumentTitle
+				
+				ComponentA.js
+				function ComponentA(){
+				
+				const [count, setCount]= useState();
+				useDocumentTitle(count);
+				
+				return(<div> <button onClick={()=>setCount(count+1)}</div>)
+				}
+				export default ComponentA
+			
