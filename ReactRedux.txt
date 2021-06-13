@@ -172,7 +172,7 @@ Multiple Reducers -              In a complex application, managing all the stat
                                                   
                                            const rootReducer = combineReducers(
                                                  {
-                                                      //combine reducer
+                                                      //combine reducer function
                                                  }
                                            )             
                                                         
