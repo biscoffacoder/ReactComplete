@@ -103,6 +103,77 @@ Setup of Ex -           1. Actions - The only way an application can interact wi
                                                         Updated state {numOfcakes: 9}
                                                         Updated state {numOfcakes: 8}
                                                         
-                                                        
+Multiple Reducers -              In a complex application, managing all the state changes in one reducer function as above can be tough, we may need to add many switch cases, based on the action.type for multiple states.
+                                          To avoid this we can have multiple states and respective reducers that independently handle each other.
+                                          Now each state can be handled independently, but store can be created for one reducer, so how to work that?
+                                          Redux provides  a combineReducers functions that can combine multiple reducer into a single reducer for our use.
+                                          
+                                          const redux = require('redux')
+                                          const createStore = redux.createStore
+                                          const combineReducers = redux.combineReducers;
+                                          
+                                           const BUY_CAKE = 'BUY_CAKE'
+                                           const BUY_ICECREAM = 'BUY_ICECREAM'     
+                                           
+                                           const indStateCake= 
+                                                 {
+                                                      numOfcakes:10
+                                                 }
+                                           const indStateIce = 
+                                           {
+                                                numOfIceCream :20
+                                           } 
+                                           
+                                          function buyCake ()
+                                                {
+                                                      return 
+                                                      {
+                                                            type : BUY_CAKE,
+                                                            info : 'First action'
+                                                      }
+                                                }
+                                           function buyIceCream ()
+                                                {
+                                                      return 
+                                                      {
+                                                            type : BUY_ICECREAM,
+                                                            info : 'Second action'
+                                                      }
+                                                }                                           
+                                                
+                                           const cakeReducer =(state = appState, action)=>
+                                           {
+                                                switch (action.type)
+                                                {
+                                                      case BUY_CAKE :
+                                                            return 
+                                                            {
+                                                                  ...state,
+                                                                  numOfcakes: state.numOfcakes - 1
+                                                            }
+                                                            
+                                                      default : return state
+                                                }
+                                           }
+                                           const iceReducer =(state = indStateIce, action)=>
+                                           {
+                                                switch (action.type)
+                                                {
+                                                      case BUY_ICECREAM :
+                                                            return 
+                                                            {
+                                                                  ...state,
+                                                                  numOfIceCream: state.numOfIceCream - 1
+                                                            }
+                                                            
+                                                      default : return state
+                                                }
+                                           }                                           
+                                                  
+                                           const rootReducer = combineReducers(
+                                                 {
+                                                      
+                                                 }
+                                           )             
                                                         
                                                         
