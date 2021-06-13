@@ -1,0 +1,107 @@
+React Redux - 	It is a predictable state container for JS apps. It is defined only for JS apps, and not tied to React alone. 
+						It stores the state of your application. State of an application is the state represented by all the individual components of that application.
+						Redux is predictable, all state transitions are explicit and we can track all of them. The changes to the state of the application become predictable.
+						It helps us manage the state of an application in a predictable manner. We have Hooks like useState to manage state, why do we need external state management?
+						Since in a deeply nested component tree, we may need to lift the state upto App.js to manage it. To come out of this, handle the state in Redux, which is outside your application.
+						We can still tackle this issues with - useContext + useReducer. So why Redux? Redux was introudced in 2015 when hooks were not available.
+						React-Redux is the official Redux UI binding library for React. It offers functions to connect React and Redu together.
+						When should I use Redux? - Ask yourself, when it becomes tough to manage state in the application.
+						To install redux - npm install redux
+						
+3 Core concepts - Cake shop - Entities-
+							1. Shop - Stores the cakes on the shelves
+							2. ShopKeeper - At the front  of the store.
+							3. Customer - To buy the cake.
+							
+							Activities -
+							1. Customer to ShopKeeper = Buy a cake
+							2. ShopKeeper to Shop = Check the shelf, remove a cake, deduct from inventory. receipt for customer
+							3. ShopKeeper to  Customer - Box the cake and give out.
+							
+							Cake Shop 												Redux 											Purpose
+							Shop							||						Store					||				Holds the state of your application
+							Intention to Buy			      	|| 		                        Action                           ||                       Describes what happened
+                                          ShopKeeper                              ||                                   Reducer                        ||                       Ties the store and actions together.
+                                           
+                                          A store that holds the state of your application. An action that describes the changes in the state of the application. A reducer which actually carries out the state transitions depending on the state.
+                                          
+3 Principles -          1. The state of your whole application is stored in an object tree within a single store
+                                 Maintain our application state in a single object which would be managed by redux store.
+                                 state: {single obejct for all of application's state}   
+                              2. The only way to change the state is to emit an action, an object describing what happened.
+                                  To update the state of your app, you need to let Redu know about that with an action. Not allowed to directly update the state object,
+                                   action: {type:Intention}
+                              3. To specify how the state tree is transformed by actions, we write pure reducers.
+                                   Reducer - (previousState, action) => newState
+                                   
+                                    Redux Store     -->        JS APP   --Dispatch-->     Action      -->Reducer --> Redux Store     
+                               
+Setup of Ex -           1. Actions - The only way an application can interact with the state, carry some information from app to the redux store via a reducer.
+                                                They are plain JS object and should have the type property. We have an action creator which is a function that returns the action object.
+                                                
+                                                const BUY_CAKE = 'BUY_CAKE'
+                                                
+                                                function buyCake ()
+                                                {
+                                                      return 
+                                                      {
+                                                            type : BUY_CAKE,
+                                                            info : 'First action'
+                                                      }
+                                                }
+                              
+                              2. Reducer - Specify how the app's state changes in response to actions sent to the store.
+                                                 Function that accepts state and action as arguments and returns the next state of an application.
+                                                 
+                                                 //define state of the app - 
+                                                 const appState= 
+                                                 {
+                                                      numOfcakes:10
+                                                 }
+                                                 const reducer =(state = appState, action)=>
+                                                 {
+                                                      switch (action.type)
+                                                      {
+                                                            case BUY_CAKE :
+                                                                  return 
+                                                                  {
+                                                                        ...state,
+                                                                        numOfcakes: state.numOfcakes - 1
+                                                                  }
+                                                                  
+                                                            default : return state
+                                                      }
+                                                 }
+                                     
+                              3. Redux Store -  One store for the application, holds the app state, exposes a method to access the state via getState(), allows the state to be updated via dispatch(action),
+                                                        Registers listeners via  subscribe(listener), handles unregistering of listener via the function returned by subscribe(listener)   
+                                                       createStore method accepts a parameter "reducer", which defines how the state should change. 
+                                                       subscribe method takes in a listener, here a plain log for the state. When an action is dispatched, store checks the reducer functiton, matches the type, returns a new state and updates it to the store as well.
+                                                       dispatch method takes in a action creator.
+                                                       While using only Redux - 
+                                                        
+                                                        const redux = require('redux')
+                                                        //Step1 - 
+                                                        const createStore =redux.createStore();
+                                                        
+                                                        //Step2 Create the store from Redux, passing the reducer function
+                                                        const store = createStore(reducer)
+                                                        console.log('Initial State', store.getState())
+                                                        
+                                                        //Step3 Subscirbe to the store, return value will be used to unsubscribe
+                                                       const unsubscribe =  store.subscribe(()=> console.log('updated state', store.getState()))
+                                                        
+                                                        //Step4 Dispatch a request to the store
+                                                        store.dispatch(buyCake())
+                                                        store.dispatch(buyCake())
+                                                        
+                                                        //Step5 Unsubscribe from the store
+                                                        unsubscribe()
+                                                        
+                                                        LOGS - 
+                                                        Initial state {numOfcakes : 10}
+                                                        Updated state {numOfcakes: 9}
+                                                        Updated state {numOfcakes: 8}
+                                                        
+                                                        
+                                                        
