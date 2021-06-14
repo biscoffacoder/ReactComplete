@@ -126,7 +126,7 @@ React Hooks - Hooks are a new feature addition to React version 16.8 which allow
 				Context without hooks uses Provider and Consumer services. 
 				Steps that were used - 1. Create the context. 2. Provide the Context and wrap the child component that needs the props. 3. The child component must be able to consume the context.
 				To move away from the verbose coding in the ContextAPI, useContext hook was introduced. 
-				
+				React Context is not optimized for high frequency changes. It shouldnt also be used to replace all component communications and props
 				Component App.js
 				
 				export const UserContext = React.createContext();
