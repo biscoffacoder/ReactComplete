@@ -6,12 +6,12 @@ function App() {
 
   return (
     <React.Fragment>
-    <Header/>
-    <main>
-      <Meals/>
-    </main>
+      <Header />
+      <main>
+        <Meals />
+      </main>
     </React.Fragment>
-   
+
   );
 }
 
